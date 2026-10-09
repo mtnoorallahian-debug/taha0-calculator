@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f5f7fb">
+<title>Taha Calculator | ماشین حساب</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#20283a;--muted:#778198;--line:#e4e8f0;--blue:#4263eb;--blue-soft:#edf1ff;--shadow:0 18px 55px #26365b12}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(135deg,#f8faff,#eef2fb);font-family:Tahoma,Arial,sans-serif;color:var(--text);display:flex;justify-content:center;align-items:center;padding:22px}
+.wrap{width:100%;max-width:410px}.brand{text-align:center;margin-bottom:20px}.logo{width:54px;height:54px;border-radius:17px;background:var(--blue);color:white;display:grid;place-items:center;font-size:27px;font-weight:bold;margin:0 auto 12px;box-shadow:0 8px 20px #4263eb35}.brand h1{font-size:23px;margin:0 0 7px;letter-spacing:-.4px}.brand p{font-size:13px;color:var(--muted);margin:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:25px;padding:18px;box-shadow:var(--shadow)}.screen{min-height:120px;background:#f8f9fd;border:1px solid #edf0f6;border-radius:17px;padding:17px 15px;display:flex;flex-direction:column;justify-content:flex-end;gap:12px;margin-bottom:14px;overflow:hidden}.expression{font-size:16px;min-height:20px;color:var(--muted);direction:ltr;text-align:left;overflow-wrap:anywhere}.result{font-size:36px;font-weight:700;line-height:1.25;direction:ltr;text-align:left;overflow-wrap:anywhere}.keys{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}button{font:inherit;cursor:pointer;border:0;min-height:58px;border-radius:15px;background:#f1f3f9;color:var(--text);font-size:20px;transition:transform .08s,background .15s;touch-action:manipulation}button:active{transform:scale(.96)}button:focus-visible{outline:3px solid #9db0ff;outline-offset:2px}.op{background:var(--blue-soft);color:var(--blue);font-weight:700}.clear{background:#fff0f0;color:#d84646}.equal{background:var(--blue);color:white;font-size:24px;font-weight:bold}.zero{grid-column:span 2}.under{display:flex;justify-content:space-between;align-items:center;margin-top:15px;color:var(--muted);font-size:12px}.under button{min-height:36px;padding:0 12px;font-size:12px;border:1px solid var(--line);background:white;border-radius:11px;color:var(--muted)}.history{margin-top:18px}.history-head{display:flex;justify-content:space-between;align-items:center;margin:0 3px 9px}.history-head h2{font-size:14px;margin:0}.history-head button{min-height:30px;font-size:12px;color:var(--muted);background:transparent}.history-list{display:grid;gap:7px}.history-item{min-height:43px;display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:#ffffffb8;font-size:13px}.history-item span:first-child{color:var(--muted);direction:ltr}.history-item span:last-child{font-weight:bold;direction:ltr}.empty{text-align:center;color:var(--muted);font-size:12px;padding:9px}footer{text-align:center;color:#9aa3b5;font-size:11px;margin-top:17px}
+@media(max-width:360px){body{padding:12px}.card{padding:13px}.keys{gap:7px}button{min-height:53px}.result{font-size:31px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="brand"><div class="logo">±</div><h1>Taha Calculator</h1><p>ماشین‌حساب ساده و سریع</p></header>
+<section class="card" aria-label="ماشین حساب">
+<div class="screen"><div id="expression" class="expression" aria-label="عبارت"></div><div id="result" class="result" aria-live="polite">۰</div></div>
+<div class="keys" id="keys">
+<button class="clear" data-action="clear">AC</button><button data-action="back">⌫</button><button class="op" data-value="%">%</button><button class="op" data-value="÷">÷</button>
+<button data-value="7">۷</button><button data-value="8">۸</button><button data-value="9">۹</button><button class="op" data-value="×">×</button>
+<button data-value="4">۴</button><button data-value="5">۵</button><button data-value="6">۶</button><button class="op" data-value="−">−</button>
+<button data-value="1">۱</button><button data-value="2">۲</button><button data-value="3">۳</button><button class="op" data-value="+">+</button>
+<button class="zero" data-value="0">۰</button><button data-value=".">.</button><button class="equal" data-action="equals">=</button>
+</div>
+<div class="under"><span>چهار عمل اصلی</span><button id="copy" type="button">کپی نتیجه</button></div>
+</section>
+<section class="history"><div class="history-head"><h2>تاریخچه محاسبات</h2><button id="clear-history" type="button">پاک کردن</button></div><div id="history-list" class="history-list"><div class="empty">هنوز محاسبه‌ای انجام نشده</div></div></section>
+<footer>ساخته‌شده با عشق برای طاها ✦</footer>
+</main>
+<script>
+(()=>{
+const $=id=>document.getElementById(id), expEl=$('expression'), resultEl=$('result'), historyEl=$('history-list');let expr='',history=[];
+const fa=s=>String(s).replace(/[0-9]/g,d=>'۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
+function tokens(s){s=s.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));if(!/^[0-9.+*/%()\-\s]*$/.test(s))throw Error();return s.match(/\d+(?:\.\d*)?|\.\d+|[()+\-*/%]/g)||[]}
+function calc(s){const t=tokens(s);let i=0;function primary(){let x=t[i++];if(x===undefined)throw Error();if(x==='+'||x==='-'){let n=primary();return x==='-'?-n:n}if(x==='('){let n=add();if(t[i++]!==')')throw Error();return n}if(!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(x))throw Error();return Number(x)}function percent(){let n=primary();while(t[i]==='%'){i++;n/=100}return n}function mul(){let n=percent();while(t[i]==='*'||t[i]==='/'){let op=t[i++],b=percent();n=op==='*'?n*b:n/b}return n}function add(){let n=mul();while(t[i]==='+'||t[i]==='-'){let op=t[i++],b=mul();n=op==='+'?n+b:n-b}return n}let n=add();if(i!==t.length||!Number.isFinite(n))throw Error();return n}
+function format(n){if(Object.is(n,-0))n=0;return fa(Number(n.toPrecision(11)).toString())}
+function render(){expEl.textContent=expr;if(!expr){resultEl.textContent='۰';return}try{resultEl.textContent=format(calc(expr))}catch{resultEl.textContent='…'}}
+function addHistory(e,n){history.unshift({e,n});history=history.slice(0,5);historyEl.replaceChildren();history.forEach(item=>{let b=document.createElement('button');b.className='history-item';let a=document.createElement('span'),c=document.createElement('span');a.textContent=item.e;c.textContent=format(item.n);b.append(a,c);b.addEventListener('click',()=>{expr=String(item.n);render()});historyEl.append(b)});if(!history.length)historyEl.innerHTML='<div class="empty">هنوز محاسبه‌ای انجام نشده</div>'}
+function equals(){try{const n=calc(expr);addHistory(expr,n);expr=String(n);render()}catch{resultEl.textContent='خطا'}}
+$('keys').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.action,v=b.dataset.value;if(a==='clear'){expr='';render()}else if(a==='back'){expr=expr.slice(0,-1);render()}else if(a==='equals')equals();else if(v!==undefined&&expr.length<90){expr+=v;render()}});
+document.addEventListener('keydown',e=>{if(/^[0-9.]$/.test(e.key))expr+=e.key;else if(['+','-','*','/','%'].includes(e.key))expr+=({'*':'×','/':'÷','-':'−'}[e.key]||e.key);else if(e.key==='Enter'||e.key==='='){equals();return}else if(e.key==='Backspace')expr=expr.slice(0,-1);else if(e.key==='Escape'){expr='';render();return}else return;render()});
+$('clear-history').addEventListener('click',()=>{history=[];historyEl.innerHTML='<div class="empty">هنوز محاسبه‌ای انجام نشده</div>'});
+$('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(resultEl.textContent);$('copy').textContent='کپی شد ✓';setTimeout(()=>$('copy').textContent='کپی نتیجه',1200)}catch{$('copy').textContent=resultEl.textContent;setTimeout(()=>$('copy').textContent='کپی نتیجه',1500)}});
+render();
+})();
+</script>
+</body>
+</html>
